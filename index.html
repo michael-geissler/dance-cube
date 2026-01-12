@@ -19,19 +19,22 @@ body {
   font-family: system-ui, sans-serif;
 }
 
+/* Szene */
 .scene {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px; /* Abstand Button */
+  gap: 48px; /* Abstand Button */
 }
 
+/* Bühne – DOPPELTE GRÖSSE */
 .stage {
-  width: 260px;
-  height: 260px;
-  perspective: 900px;
+  width: 520px;
+  height: 520px;
+  perspective: 1100px;
 }
 
+/* Würfel */
 .cube {
   width: 100%;
   height: 100%;
@@ -40,12 +43,13 @@ body {
   transition: transform 1s cubic-bezier(.2,.85,.2,1);
 }
 
+/* Seiten */
 .face {
   position: absolute;
-  width: 260px;
-  height: 260px;
-  background: #fff;
-  border-radius: 14px;
+  width: 520px;
+  height: 520px;
+  background: #ffffff;
+  border-radius: 18px;
   overflow: hidden;
 }
 
@@ -53,19 +57,22 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  user-select: none;
+  pointer-events: none;
 }
 
-/* Positionen */
-.front  { transform: translateZ(130px); }
-.back   { transform: rotateY(180deg) translateZ(130px); }
-.right  { transform: rotateY(90deg) translateZ(130px); }
-.left   { transform: rotateY(-90deg) translateZ(130px); }
-.top    { transform: rotateX(90deg) translateZ(130px); }
-.bottom { transform: rotateX(-90deg) translateZ(130px); }
+/* 3D-Positionen (Tiefe angepasst) */
+.front  { transform: translateZ(260px); }
+.back   { transform: rotateY(180deg) translateZ(260px); }
+.right  { transform: rotateY(90deg) translateZ(260px); }
+.left   { transform: rotateY(-90deg) translateZ(260px); }
+.top    { transform: rotateX(90deg) translateZ(260px); }
+.bottom { transform: rotateX(-90deg) translateZ(260px); }
 
+/* Button */
 button {
-  padding: 14px 34px;
-  font-size: 18px;
+  padding: 16px 40px;
+  font-size: 20px;
   font-weight: 700;
   background: #000;
   color: #fff;
@@ -75,7 +82,7 @@ button {
 }
 
 button:hover {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 </style>
 </head>
@@ -122,5 +129,3 @@ function roll() {
 
 </body>
 </html>
-
-
