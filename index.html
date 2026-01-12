@@ -24,14 +24,32 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px; /* Abstand Button */
+  gap: 96px; /* fixer Abstand */
 }
 
-/* Bühne – DOPPELTE GRÖSSE */
+/* Bühne */
 .stage {
+  position: relative;
   width: 520px;
   height: 520px;
   perspective: 1100px;
+}
+
+/* SCHATTEN unter dem Würfel */
+.shadow {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  width: 420px;
+  height: 70px;
+  background: radial-gradient(ellipse at center,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0.25) 35%,
+    rgba(0,0,0,0.1) 55%,
+    rgba(0,0,0,0.0) 70%
+  );
+  transform: translateX(-50%);
+  filter: blur(6px);
 }
 
 /* Würfel */
@@ -40,7 +58,7 @@ body {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(.2,.85,.2,1);
+  transition: transform 2.8s cubic-bezier(.18,.9,.25,1); /* LANGSAMER */
 }
 
 /* Seiten */
@@ -61,7 +79,7 @@ body {
   pointer-events: none;
 }
 
-/* 3D-Positionen (Tiefe angepasst) */
+/* 3D-Positionen */
 .front  { transform: translateZ(260px); }
 .back   { transform: rotateY(180deg) translateZ(260px); }
 .right  { transform: rotateY(90deg) translateZ(260px); }
@@ -69,11 +87,12 @@ body {
 .top    { transform: rotateX(90deg) translateZ(260px); }
 .bottom { transform: rotateX(-90deg) translateZ(260px); }
 
-/* Button */
+/* BUTTON */
 button {
-  padding: 16px 40px;
-  font-size: 20px;
-  font-weight: 700;
+  padding: 28px 80px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   background: #000;
   color: #fff;
   border: none;
@@ -82,7 +101,7 @@ button {
 }
 
 button:hover {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 </style>
 </head>
@@ -91,6 +110,8 @@ button:hover {
 
 <div class="scene">
   <div class="stage">
+    <div class="shadow"></div>
+
     <div class="cube" id="cube">
       <div class="face front"><img src="1.png"></div>
       <div class="face right"><img src="2.png"></div>
@@ -101,7 +122,7 @@ button:hover {
     </div>
   </div>
 
-  <button onclick="roll()">Würfeln</button>
+  <button onclick="roll()">WÜRFELN</button>
 </div>
 
 <script>
@@ -120,8 +141,8 @@ function roll() {
   const n = Math.floor(Math.random() * 6) + 1;
   const [x, y] = rotations[n];
 
-  const spinX = x + 360 * (Math.floor(Math.random() * 2) + 1);
-  const spinY = y + 360 * (Math.floor(Math.random() * 2) + 1);
+  const spinX = x + 360 * (Math.floor(Math.random() * 3) + 2);
+  const spinY = y + 360 * (Math.floor(Math.random() * 3) + 2);
 
   cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
 }
