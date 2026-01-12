@@ -3,118 +3,124 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Online Würfel</title>
+<title>3D Dance Cube</title>
 
 <style>
-  body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    background:#000;
-    font-family: system-ui, -apple-system, sans-serif;
-  }
+html, body {
+  margin: 0;
+  height: 100%;
+}
 
-  .scene{
-    width:280px;
-    height:280px;
-    perspective:800px;
-    margin-bottom:24px;
-  }
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("boden.jpg") center / cover no-repeat;
+  font-family: system-ui, sans-serif;
+}
 
-  .cube{
-    width:100%;
-    height:100%;
-    position:relative;
-    transform-style:preserve-3d;
-    transition:transform 1s ease-out;
-  }
+.scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px; /* Abstand Button */
+}
 
-  .face{
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+.stage {
+  width: 260px;
+  height: 260px;
+  perspective: 900px;
+}
 
-  .face img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-  }
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(.2,.85,.2,1);
+}
 
-  .front  { transform: translateZ(140px); }
-  .back   { transform: rotateY(180deg) translateZ(140px); }
-  .right  { transform: rotateY(90deg)  translateZ(140px); }
-  .left   { transform: rotateY(-90deg) translateZ(140px); }
-  .top    { transform: rotateX(90deg)  translateZ(140px); }
-  .bottom { transform: rotateX(-90deg) translateZ(140px); }
+.face {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+}
 
-  button{
-    background:#000;
-    color:#fff;
-    border:2px solid #fff;
-    padding:14px 28px;
-    font-size:18px;
-    font-weight:700;
-    cursor:pointer;
-    border-radius:6px;
-  }
+.face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  button:hover{
-    background:#111;
-  }
+/* Positionen */
+.front  { transform: translateZ(130px); }
+.back   { transform: rotateY(180deg) translateZ(130px); }
+.right  { transform: rotateY(90deg) translateZ(130px); }
+.left   { transform: rotateY(-90deg) translateZ(130px); }
+.top    { transform: rotateX(90deg) translateZ(130px); }
+.bottom { transform: rotateX(-90deg) translateZ(130px); }
+
+button {
+  padding: 14px 34px;
+  font-size: 18px;
+  font-weight: 700;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.04);
+}
 </style>
 </head>
 
 <body>
 
 <div class="scene">
-  <div class="cube" id="cube">
-    <!-- PNGs im gleichen Ordner -->
-    <div class="face front"><img src="1.png"></div>
-    <div class="face right"><img src="2.png"></div>
-    <div class="face back"><img src="3.png"></div>
-    <div class="face left"><img src="4.png"></div>
-    <div class="face top"><img src="5.png"></div>
-    <div class="face bottom"><img src="6.png"></div>
+  <div class="stage">
+    <div class="cube" id="cube">
+      <div class="face front"><img src="1.png"></div>
+      <div class="face right"><img src="2.png"></div>
+      <div class="face back"><img src="3.png"></div>
+      <div class="face left"><img src="4.png"></div>
+      <div class="face top"><img src="5.png"></div>
+      <div class="face bottom"><img src="6.png"></div>
+    </div>
   </div>
+
+  <button onclick="roll()">Würfeln</button>
 </div>
 
-<button id="roll">würfeln</button>
-
 <script>
-  const cube = document.getElementById("cube");
-  const button = document.getElementById("roll");
+const cube = document.getElementById("cube");
 
-  const rotations = {
-    1: "rotateX(0deg) rotateY(0deg)",
-    2: "rotateX(0deg) rotateY(-90deg)",
-    3: "rotateX(0deg) rotateY(180deg)",
-    4: "rotateX(0deg) rotateY(90deg)",
-    5: "rotateX(-90deg) rotateY(0deg)",
-    6: "rotateX(90deg) rotateY(0deg)"
-  };
+const rotations = {
+  1: [0, 0],
+  2: [0, -90],
+  3: [0, 180],
+  4: [0, 90],
+  5: [-90, 0],
+  6: [90, 0]
+};
 
-  button.addEventListener("click", () => {
-    const roll = Math.floor(Math.random() * 6) + 1;
+function roll() {
+  const n = Math.floor(Math.random() * 6) + 1;
+  const [x, y] = rotations[n];
 
-    // Extra Drehung für Würfel-Feeling
-    cube.style.transform =
-      `rotateX(${360 + Math.random()*360}deg)
-       rotateY(${360 + Math.random()*360}deg)`;
+  const spinX = x + 360 * (Math.floor(Math.random() * 2) + 1);
+  const spinY = y + 360 * (Math.floor(Math.random() * 2) + 1);
 
-    setTimeout(() => {
-      cube.style.transform = rotations[roll];
-    }, 400);
-  });
+  cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
+}
 </script>
 
 </body>
 </html>
+
 
