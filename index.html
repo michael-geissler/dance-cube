@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dance Cube – Online Würfel</title>
+  <style>
+    :root{
+      --size: min(58vmin, 360px);
+      --half: calc(var(--size) / 2);
+      --bg: #0b0b0b;
+      --fg: #ffffff;
+      --card: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.14);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background: radial-gradient(1200px 600px at 50% 30%, #151515 0%, var(--bg) 55%, #000 100%);
+      color:var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .wrap{
+      width:min(900px, 92vw);
+      display:grid;
+      gap:20px;
+      justify-items:center;
+      padding:28px 16px;
+    }
+    .stage{
+      width:var(--size);
+      height:var(--size);
+      perspective: 900px;
+      display:grid;
+      place-items:center;
+      border-radius:24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
+    }
+    .cube{
+      width:var(--size);
+      height:var(--size);
+      position:relative;
+      transform-style: preserve-3d;
+      transform: rotateX(-22deg) rotateY(35deg);
+      transition: transform 900ms cubic-bezier(.2,.85,.2,1);
+      will-change: transform;
+    }
+    .face{
+      position:absolute;
+      inset:0;
+      transform-style: preserve-3d;
+      display:grid;
+      place-items:center;
+      border-radius:20px;
+      overflow:hidden;
+      background:#000;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+    .face img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      user-select:none;
+      -webkit-user-drag:none;
+    }
+
+    /* 6 Seiten */
+    .front  { transform: translateZ(var(--half)); }
+    .back   { transform: rotateY(180deg) translateZ(var(--half)); }
+    .right  { transform: rotateY( 90deg) translateZ(var(--half)); }
+    .left   { transform: rotateY(-90deg) translateZ(var(--half)); }
+    .top    { transform: rotateX( 90deg) translateZ(var(--half)); }
+    .bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
+
+    .panel{
+      width:min(720px, 92vw);
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      color:#fff;
+      padding:12px 18px;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+    button:hover{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.26); }
+    .hint{
+      opacity:.8;
+      font-size:14px;
+      text-align:center;
+      max-width: 66ch;
+      line-height:1.35;
+    }
+    .result{
+      font-weight:800;
+      letter-spacing:.2px;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.22);
+      min-width: 190px;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="stage" aria-label="3D Würfel">
+      <div class="cube" id="cube">
+        <!-- Lege diese Dateien in denselben Ordner wie diese HTML:
+             1.png, 2.png, 3.png, 4.png, 5.png, 6.png -->
+        <div class="face front"><img src="1.png" alt="Seite 1"></div>
+        <div class="face right"><img src="2.png" alt="Seite 2"></div>
+        <div class="face back"><img src="3.png" alt="Seite 3"></div>
+        <div class="face left"><img src="4.png" alt="Seite 4"></div>
+        <div class="face top"><img src="5.png" alt="Seite 5"></div>
+        <div class="face bottom"><img src="6.png" alt="Seite 6"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <button id="rollBtn">Würfeln</button>
+      <div class="result" id="result">Ergebnis: –</div>
+    </div>
+
+    <div class="hint">
+      Tipp: Wenn du die Datei als <b>index.html</b> speicherst und die 6 PNGs im gleichen Ordner liegen,
+      läuft’s sofort. Auf Webspace hochladen = online.
+    </div>
+  </div>
+
+  <script>
+    const cube = document.getElementById("cube");
+    const rollBtn = document.getElementById("rollBtn");
+    const result = document.getElementById("result");
+
+    // Für jede Zahl: Cube-Rotation, sodass die passende Seite vorne ist.
+    // (Wir definieren "Ergebnis" = welche Grafik vorne sichtbar ist.)
+    const orientations = {
+      1: { x: 0,   y: 0   },   // front
+      2: { x: 0,   y: -90 },   // right -> front
+      3: { x: 0,   y: 180 },   // back -> front
+      4: { x: 0,   y: 90  },   // left -> front
+      5: { x: -90, y: 0   },   // top -> front
+      6: { x: 90,  y: 0   },   // bottom -> front
+    };
+
+    let spinning = false;
+    let spinX = -22; // Start-Ansicht (leicht 3D)
+    let spinY = 35;
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function setCubeRotation(xDeg, yDeg, extraSpins = 0) {
+      // optional: mehrere volle Drehungen dazu, damit's "würfelt"
+      const full = 360 * extraSpins;
+      cube.style.transform = `rotateX(${xDeg + full}deg) rotateY(${yDeg + full}deg)`;
+    }
+
+    rollBtn.addEventListener("click", () => {
+      if (spinning) return;
+      spinning = true;
+      rollBtn.disabled = true;
+
+      const n = randInt(1, 6);
+
+      // Random "Würfelgefühl": zusätzliche volle Rotationen
+      const extra = randInt(2, 4);
+
+      // Zielausrichtung
+      const target = orientations[n];
+
+      // Erst wild drehen, dann sauber auf Ergebnis einrasten
+      // Phase 1: schnelle Mischung
+      cube.style.transition = "transform 450ms cubic-bezier(.2,.9,.2,1)";
+      spinX += randInt(180, 420);
+      spinY += randInt(180, 420);
+      cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
+
+      // Phase 2: auf Ergebnis
+      setTimeout(() => {
+        cube.style.transition = "transform 900ms cubic-bezier(.2,.85,.2,1)";
+        // Wir addieren extra volle Drehungen, aber enden exakt auf der Orientierung
+        setCubeRotation(target.x, target.y, extra);
+
+        // UI
+        result.textContent = `Ergebnis: ${n}`;
+        setTimeout(() => {
+          spinning = false;
+          rollBtn.disabled = false;
+        }, 950);
+      }, 480);
+    });
+  </script>
+</body>
+</html>
