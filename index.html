@@ -7,129 +7,120 @@
 
 <style>
 :root{
-  /* Desktop */
-  --cubeSize: min(480px, 70vw, 55vh); /* etwas kleiner */
+  /* ===== DESKTOP ===== */
+  --cubeSize: min(480px, 70vw, 55vh);
   --half: calc(var(--cubeSize) / 2);
 
   --gapScene: 72px;
   --gapHeadline: 36px;
+  --gapButtons: 48px;
+
+  --headlineOffset: -10px;
+  --headlineScale: 0.9;
 
   --shadowW: calc(var(--cubeSize) * 0.82);
   --shadowH: calc(var(--cubeSize) * 0.14);
   --shadowBottom: calc(var(--cubeSize) * -0.08);
 
-  /* Safe area */
-  --padTop: max(18px, env(safe-area-inset-top));
-  --padSide: max(18px, env(safe-area-inset-right));
-  --padBottom: max(18px, env(safe-area-inset-bottom));
-  --padLeft: max(18px, env(safe-area-inset-left));
-
-  /* Button Desktop */
   --btnPadY: 20px;
   --btnPadX: 56px;
   --btnFont: 22px;
-
-  --cubeOffsetDesktop: -5px;
-  --btnOffsetMobile: 0px;
 }
 
-/* MOBILE */
-@media (max-width: 900px) {
+/* ===== MOBILE ===== */
+@media (max-width: 900px){
   :root{
     --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
     --gapScene: 22px;
-    --gapHeadline: 14px;
+    --gapHeadline: 12px;
+    --gapButtons: 22px;
 
-    --padTop: calc(env(safe-area-inset-top) + 34px);
-    --padSide: max(14px, env(safe-area-inset-right));
-    --padBottom: calc(env(safe-area-inset-bottom) + 14px);
-    --padLeft: max(14px, env(safe-area-inset-left));
+    --headlineOffset: -5px;
+    --headlineScale: 0.95;
 
     --btnPadY: 16px;
     --btnPadX: 46px;
     --btnFont: 20px;
-
-    --btnOffsetMobile: 20px;
   }
 }
 
-html, body {
-  margin: 0;
-  height: 100%;
-}
+html, body{margin:0;height:100%;}
 
 body{
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: url("boden.jpg") center / cover no-repeat;
-  font-family: system-ui, sans-serif;
-  padding: var(--padTop) var(--padSide) var(--padBottom) var(--padLeft);
+  min-height:100svh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:url("boden.jpg") center/cover no-repeat;
+  font-family:system-ui,sans-serif;
 }
 
-@media (max-width: 900px){
-  body{ align-items: flex-start; }
+@media (max-width:900px){
+  body{align-items:flex-start;}
 }
 
 .scene{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap: var(--gapScene);
+  gap:var(--gapScene);
 }
 
-/* Headline */
+/* ===== HEADLINE ===== */
 .headline{
-  width: calc(var(--cubeSize) * 0.9); /* Desktop kleiner */
-  margin-bottom: var(--gapHeadline);
-}
-@media (max-width: 900px){
-  .headline{ width: var(--cubeSize); }
-}
-.headline img{
-  width:100%;
-  height:auto;
-  display:block;
+  width:calc(var(--cubeSize) * var(--headlineScale));
+  margin-bottom:var(--gapHeadline);
+  transform: translateY(var(--headlineOffset));
 }
 
-/* Bühne */
+.headline img{width:100%;display:block;}
+
+/* Headline Wackeln */
+@keyframes wobble {
+  0%{transform:translateY(var(--headlineOffset)) rotate(0deg)}
+  25%{transform:translateY(calc(var(--headlineOffset)-2px)) rotate(-1deg)}
+  50%{transform:translateY(var(--headlineOffset)) rotate(1deg)}
+  75%{transform:translateY(calc(var(--headlineOffset)-1px)) rotate(-1deg)}
+  100%{transform:translateY(var(--headlineOffset)) rotate(0deg)}
+}
+.party-active .headline{
+  animation:wobble .6s infinite ease-in-out;
+}
+
+/* ===== STAGE ===== */
 .stage{
-  position: relative;
-  width: var(--cubeSize);
-  height: var(--cubeSize);
+  position:relative;
+  width:var(--cubeSize);
+  height:var(--cubeSize);
   perspective: calc(var(--cubeSize) * 2.2);
-  transform: translateY(var(--cubeOffsetDesktop));
 }
 
 /* Schatten */
 .shadow{
   position:absolute;
-  bottom: var(--shadowBottom);
+  bottom:var(--shadowBottom);
   left:50%;
-  width: var(--shadowW);
-  height: var(--shadowH);
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center,
-    rgba(0,0,0,0.45) 0%,
-    rgba(0,0,0,0.25) 35%,
-    rgba(0,0,0,0.1) 55%,
+  width:var(--shadowW);
+  height:var(--shadowH);
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,
+    rgba(0,0,0,.45) 0%,
+    rgba(0,0,0,.25) 35%,
+    rgba(0,0,0,.1) 55%,
     rgba(0,0,0,0) 70%);
-  filter: blur(6px);
+  filter:blur(6px);
 }
 
-/* Würfel */
+/* Cube */
 .cube{
   width:100%;
   height:100%;
   position:relative;
-  transform-style: preserve-3d;
-  transition: transform 2.8s cubic-bezier(.18,.9,.25,1);
+  transform-style:preserve-3d;
+  transition:transform 2.8s cubic-bezier(.18,.9,.25,1);
 }
 
-/* Seiten */
+/* Faces */
 .face{
   position:absolute;
   width:100%;
@@ -138,84 +129,64 @@ body{
   border-radius:16px;
   overflow:hidden;
 }
-.face img{
-  width:100%;
-  height:100%;
-  object-fit: cover;
-}
+.face img{width:100%;height:100%;object-fit:cover;}
 
-/* 3D */
-.front  { transform: translateZ(var(--half)); }
-.back   { transform: rotateY(180deg) translateZ(var(--half)); }
-.right  { transform: rotateY(90deg) translateZ(var(--half)); }
-.left   { transform: rotateY(-90deg) translateZ(var(--half)); }
-.top    { transform: rotateX(90deg) translateZ(var(--half)); }
-.bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
+.front{transform:translateZ(var(--half))}
+.back{transform:rotateY(180deg) translateZ(var(--half))}
+.right{transform:rotateY(90deg) translateZ(var(--half))}
+.left{transform:rotateY(-90deg) translateZ(var(--half))}
+.top{transform:rotateX(90deg) translateZ(var(--half))}
+.bottom{transform:rotateX(-90deg) translateZ(var(--half))}
 
-/* Buttons */
+/* ===== BUTTONS ===== */
 .buttons{
   display:flex;
-  gap: 18px;
-  transform: translateY(var(--btnOffsetMobile));
+  gap:18px;
+  margin-top:var(--gapButtons);
 }
-@media (max-width: 900px){
-  .buttons{
-    flex-direction: column;
-    gap: 14px;
-  }
+
+@media (max-width:900px){
+  .buttons{flex-direction:column;gap:14px;}
 }
 
 .btn{
-  padding: var(--btnPadY) var(--btnPadX);
-  font-size: var(--btnFont);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  border-radius: 999px;
-  cursor:pointer;
+  padding:var(--btnPadY) var(--btnPadX);
+  font-size:var(--btnFont);
+  font-weight:800;
+  letter-spacing:.12em;
+  border-radius:999px;
   border:none;
+  cursor:pointer;
 }
-.btn-black{ background:#000; color:#fff; }
-.btn-white{ background:#fff; color:#000; border:2px solid #000; }
+
+.btn-black{background:#000;color:#fff;}
+.btn-party{background:#f74931;color:#fff;}
+
+/* PARTY Pulsieren */
+@keyframes pulse {
+  0%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+  100%{transform:scale(1)}
+}
+.party-active .btn-party{
+  animation:pulse 1.1s infinite ease-in-out;
+}
 
 /* Countdown */
 .countdown{
+  margin-top:8px;
   font-weight:700;
   font-size:14px;
-  margin-top: 6px;
   display:none;
-}
-
-/* 🔒 Landscape-Sperre (Mobile) */
-.orientation-lock{
-  position:fixed;
-  inset:0;
-  background:#000;
-  color:#fff;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  z-index:9999;
-  font-size:18px;
-  padding:24px;
-}
-
-@media (max-width: 900px) and (orientation: landscape){
-  .orientation-lock{ display:flex; }
-  body{ overflow:hidden; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="orientation-lock">
-  Bitte Hochformat verwenden 📱
-</div>
-
-<div class="scene">
+<div class="scene" id="scene">
   <div class="headline">
-    <img src="headline.png" alt="Dance Cube">
+    <img src="headline.png" alt="Headline">
   </div>
 
   <div class="stage">
@@ -232,23 +203,21 @@ body{
 
   <div class="buttons">
     <button id="rollBtn" class="btn btn-black">WÜRFELN</button>
-    <button id="partyBtn" class="btn btn-white">PARTY</button>
+    <button id="partyBtn" class="btn btn-party">PARTY</button>
   </div>
 
   <div id="countdown" class="countdown"></div>
 </div>
 
 <script>
-const cube = document.getElementById("cube");
-const rollBtn = document.getElementById("rollBtn");
-const partyBtn = document.getElementById("partyBtn");
-const countdown = document.getElementById("countdown");
+const cube=document.getElementById("cube");
+const rollBtn=document.getElementById("rollBtn");
+const partyBtn=document.getElementById("partyBtn");
+const countdown=document.getElementById("countdown");
+const scene=document.getElementById("scene");
 
-const rotations = {
-  1:[0,0],2:[0,-90],3:[0,180],4:[0,90],5:[-90,0],6:[90,0]
-};
-
-let party=false, timer=null, counter=null, sec=10;
+const rotations={1:[0,0],2:[0,-90],3:[0,180],4:[0,90],5:[-90,0],6:[90,0]};
+let party=false,timer=null,counter=null,sec=10;
 
 function roll(){
   const n=Math.floor(Math.random()*6)+1;
@@ -261,6 +230,7 @@ rollBtn.onclick=roll;
 partyBtn.onclick=()=>{
   if(!party){
     party=true;
+    scene.classList.add("party-active");
     partyBtn.textContent="PARTY STOPPEN";
     rollBtn.disabled=true;
     countdown.style.display="block";
@@ -268,17 +238,11 @@ partyBtn.onclick=()=>{
     sec=10;
     countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
 
-    timer=setInterval(()=>{
-      roll();
-      sec=10;
-    },10000);
-
-    counter=setInterval(()=>{
-      sec--;
-      countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
-    },1000);
-  } else {
+    timer=setInterval(()=>{roll();sec=10},10000);
+    counter=setInterval(()=>{sec--;countdown.textContent=`NÄCHSTER WURF IN ${sec}s`},1000);
+  }else{
     party=false;
+    scene.classList.remove("party-active");
     partyBtn.textContent="PARTY";
     rollBtn.disabled=false;
     clearInterval(timer);
