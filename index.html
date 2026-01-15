@@ -17,7 +17,7 @@
   --shadowBottom: calc(var(--cubeSize) * -0.08);
 }
 
-/* RESPONSIVE: Würfel 1/3 kleiner (= 66.666%) */
+/* RESPONSIVE: Würfel 1/3 kleiner */
 @media (max-width: 900px) {
   :root{
     --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
@@ -36,11 +36,8 @@ body {
   justify-content: center;
   align-items: center;
 
-  /* Boden füllt den ganzen Bildschirm */
-  background-image: url("boden.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  /* Boden füllt den gesamten Bildschirm */
+  background: url("boden.jpg") center / cover no-repeat;
 
   font-family: system-ui, sans-serif;
   padding: 18px;
@@ -52,6 +49,17 @@ body {
   flex-direction: column;
   align-items: center;
   gap: var(--gap);
+}
+
+/* HEADLINE */
+.headline {
+  width: var(--cubeSize);
+}
+
+.headline img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* Bühne */
@@ -137,6 +145,13 @@ button:hover {
 <body>
 
 <div class="scene">
+
+  <!-- HEADLINE -->
+  <div class="headline">
+    <img src="headline.png" alt="Headline">
+  </div>
+
+  <!-- WÜRFEL -->
   <div class="stage">
     <div class="shadow"></div>
 
