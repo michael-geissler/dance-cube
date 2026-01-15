@@ -7,17 +7,22 @@
 
 <style>
 :root{
-  /* Responsiv: Würfel passt sich automatisch an */
+  /* Desktop/normal */
   --cubeSize: min(520px, 82vw, 60vh);
   --half: calc(var(--cubeSize) / 2);
-
-  /* Abstände */
   --gap: clamp(48px, 8vh, 96px);
 
-  /* Schatten */
   --shadowW: calc(var(--cubeSize) * 0.82);
   --shadowH: calc(var(--cubeSize) * 0.14);
   --shadowBottom: calc(var(--cubeSize) * -0.08);
+}
+
+/* RESPONSIVE: Würfel 1/3 kleiner (= 66.666%) */
+@media (max-width: 900px) {
+  :root{
+    --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
+    --gap: clamp(40px, 7vh, 80px);
+  }
 }
 
 html, body {
@@ -26,12 +31,19 @@ html, body {
 }
 
 body {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url("boden.jpg") center / cover no-repeat;
+
+  /* Boden füllt den ganzen Bildschirm */
+  background-image: url("boden.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   font-family: system-ui, sans-serif;
-  padding: 18px; /* damit nix am Rand klebt */
+  padding: 18px;
 }
 
 /* Szene */
@@ -50,7 +62,7 @@ body {
   perspective: calc(var(--cubeSize) * 2.2);
 }
 
-/* SCHATTEN unter dem Würfel */
+/* Schatten */
 .shadow {
   position: absolute;
   bottom: var(--shadowBottom);
@@ -73,7 +85,7 @@ body {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 2.8s cubic-bezier(.18,.9,.25,1); /* langsam */
+  transition: transform 2.8s cubic-bezier(.18,.9,.25,1);
 }
 
 /* Seiten */
@@ -94,7 +106,7 @@ body {
   pointer-events: none;
 }
 
-/* 3D-Positionen (Tiefe responsiv) */
+/* 3D-Positionen */
 .front  { transform: translateZ(var(--half)); }
 .back   { transform: rotateY(180deg) translateZ(var(--half)); }
 .right  { transform: rotateY(90deg) translateZ(var(--half)); }
@@ -102,7 +114,7 @@ body {
 .top    { transform: rotateX(90deg) translateZ(var(--half)); }
 .bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
 
-/* BUTTON (responsiv) */
+/* Button */
 button {
   padding: clamp(16px, 3.2vmin, 28px) clamp(34px, 7vmin, 80px);
   font-size: clamp(18px, 4.2vmin, 32px);
@@ -118,14 +130,6 @@ button {
 
 button:hover {
   transform: scale(1.04);
-}
-
-/* Extra: sehr kleine Displays */
-@media (max-width: 380px) {
-  :root{
-    --cubeSize: min(92vw, 52vh);
-    --gap: clamp(36px, 7vh, 72px);
-  }
 }
 </style>
 </head>
