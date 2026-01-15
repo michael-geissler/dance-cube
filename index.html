@@ -7,7 +7,6 @@
 
 <style>
 :root{
-  /* ===== DESKTOP ===== */
   --cubeSize: min(480px, 70vw, 55vh);
   --half: calc(var(--cubeSize) / 2);
 
@@ -27,13 +26,11 @@
   --btnFont: 22px;
 }
 
-/* ===== MOBILE ===== */
 @media (max-width: 900px){
   :root{
     --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
-
     --gapScene: 22px;
-    --gapHeadline: 22px; /* +10px Abstand Headline → Würfel */
+    --gapHeadline: 22px;
     --gapButtons: 22px;
 
     --headlineOffset: 5px;
@@ -45,10 +42,7 @@
   }
 }
 
-html, body{
-  margin:0;
-  height:100%;
-}
+html,body{margin:0;height:100%;}
 
 body{
   min-height:100svh;
@@ -60,12 +54,8 @@ body{
 }
 
 @media (max-width:900px){
-  body{ align-items:flex-start; }
-}
-
-/* Mobile: gesamter Inhalt 10px tiefer */
-@media (max-width:900px){
-  .scene{ margin-top:10px; }
+  body{align-items:flex-start;}
+  .scene{margin-top:10px;}
 }
 
 .scene{
@@ -75,19 +65,14 @@ body{
   gap:var(--gapScene);
 }
 
-/* ===== HEADLINE ===== */
 .headline{
   width:calc(var(--cubeSize) * var(--headlineScale));
   margin-bottom:var(--gapHeadline);
   transform:translateY(var(--headlineOffset));
 }
 
-.headline img{
-  width:100%;
-  display:block;
-}
+.headline img{width:100%;display:block;}
 
-/* Headline wackelt im PARTY-Modus */
 @keyframes wobble{
   0%{transform:translateY(var(--headlineOffset)) rotate(0deg)}
   25%{transform:translateY(calc(var(--headlineOffset)-2px)) rotate(-1deg)}
@@ -95,11 +80,8 @@ body{
   75%{transform:translateY(calc(var(--headlineOffset)-1px)) rotate(-1deg)}
   100%{transform:translateY(var(--headlineOffset)) rotate(0deg)}
 }
-.party-active .headline{
-  animation:wobble .6s infinite ease-in-out;
-}
+.party-active .headline{animation:wobble .6s infinite ease-in-out;}
 
-/* ===== STAGE ===== */
 .stage{
   position:relative;
   width:var(--cubeSize);
@@ -107,7 +89,6 @@ body{
   perspective:calc(var(--cubeSize) * 2.2);
 }
 
-/* Schatten */
 .shadow{
   position:absolute;
   bottom:var(--shadowBottom);
@@ -123,7 +104,6 @@ body{
   filter:blur(6px);
 }
 
-/* Cube */
 .cube{
   width:100%;
   height:100%;
@@ -132,7 +112,6 @@ body{
   transition:transform 2.8s cubic-bezier(.18,.9,.25,1);
 }
 
-/* Faces */
 .face{
   position:absolute;
   width:100%;
@@ -141,11 +120,7 @@ body{
   border-radius:16px;
   overflow:hidden;
 }
-.face img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+.face img{width:100%;height:100%;object-fit:cover;}
 
 .front{transform:translateZ(var(--half))}
 .back{transform:rotateY(180deg) translateZ(var(--half))}
@@ -154,7 +129,6 @@ body{
 .top{transform:rotateX(90deg) translateZ(var(--half))}
 .bottom{transform:rotateX(-90deg) translateZ(var(--half))}
 
-/* ===== BUTTONS ===== */
 .buttons{
   display:flex;
   gap:18px;
@@ -162,13 +136,9 @@ body{
 }
 
 @media (max-width:900px){
-  .buttons{
-    flex-direction:column;
-    gap:14px;
-  }
+  .buttons{flex-direction:column;gap:14px;}
 }
 
-/* gleiche Größe immer */
 .btn{
   padding:var(--btnPadY) var(--btnPadX);
   font-size:var(--btnFont);
@@ -182,33 +152,19 @@ body{
 }
 
 @media (min-width:901px){
-  .btn{
-    width:320px;
-    max-width:none;
-  }
+  .btn{width:320px;max-width:none;}
 }
 
-.btn-black{
-  background:#000;
-  color:#fff;
-}
+.btn-black{background:#000;color:#fff;}
+.btn-party{background:#f74931;color:#fff;}
 
-.btn-party{
-  background:#f74931;
-  color:#fff;
-}
-
-/* PARTY Button pulsiert */
 @keyframes pulse{
   0%{transform:scale(1)}
   50%{transform:scale(1.04)}
   100%{transform:scale(1)}
 }
-.party-active .btn-party{
-  animation:pulse 1.1s infinite ease-in-out;
-}
+.party-active .btn-party{animation:pulse 1.1s infinite ease-in-out;}
 
-/* Countdown */
 .countdown{
   margin-top:10px;
   font-weight:800;
@@ -220,7 +176,6 @@ body{
   text-shadow:0 2px 10px rgba(0,0,0,.45);
 }
 
-/* ===== Querformat-Sperre Mobile ===== */
 .orientation-lock{
   position:fixed;
   inset:0;
@@ -246,7 +201,7 @@ body{
 <body>
 
 <div class="orientation-lock">
-  Bitte im <b>Hochformat</b> weitertanzen 🔁
+  Bitte im <b> Hochformat </b> weitertanzen 🔁
 </div>
 
 <div class="scene" id="scene">
@@ -275,17 +230,14 @@ body{
 </div>
 
 <script>
-const cube = document.getElementById("cube");
-const rollBtn = document.getElementById("rollBtn");
-const partyBtn = document.getElementById("partyBtn");
-const countdown = document.getElementById("countdown");
-const scene = document.getElementById("scene");
+const cube=document.getElementById("cube");
+const rollBtn=document.getElementById("rollBtn");
+const partyBtn=document.getElementById("partyBtn");
+const countdown=document.getElementById("countdown");
+const scene=document.getElementById("scene");
 
-const rotations = {
-  1:[0,0],2:[0,-90],3:[0,180],4:[0,90],5:[-90,0],6:[90,0]
-};
-
-let party=false, timer=null, counter=null, sec=10;
+const rotations={1:[0,0],2:[0,-90],3:[0,180],4:[0,90],5:[-90,0],6:[90,0]};
+let party=false,timer=null,counter=null,sec=10;
 
 function roll(){
   const n=Math.floor(Math.random()*6)+1;
@@ -293,10 +245,7 @@ function roll(){
   cube.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`;
 }
 
-rollBtn.onclick=()=>{
-  if(party) return;
-  roll();
-};
+rollBtn.onclick=()=>{ if(!party) roll(); };
 
 partyBtn.onclick=()=>{
   if(!party){
@@ -310,22 +259,19 @@ partyBtn.onclick=()=>{
     countdown.textContent=`NÄCHSTER MOVE IN ${sec}s`;
     roll();
 
-    timer=setInterval(()=>{ roll(); sec=10; },10000);
+    timer=setInterval(()=>{roll();sec=10;},10000);
     counter=setInterval(()=>{
       sec--;
       countdown.textContent=`NÄCHSTER MOVE IN ${sec}s`;
     },1000);
-
   }else{
     party=false;
     scene.classList.remove("party-active");
     partyBtn.textContent="PARTY STARTEN";
     rollBtn.disabled=false;
-
     clearInterval(timer);
     clearInterval(counter);
     countdown.style.display="none";
-
     cube.style.transform="rotateX(0deg) rotateY(0deg)";
   }
 };
