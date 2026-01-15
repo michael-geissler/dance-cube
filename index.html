@@ -8,11 +8,11 @@
 <style>
 :root{
   /* Desktop */
-  --cubeSize: min(520px, 82vw, 60vh);
+  --cubeSize: min(480px, 70vw, 55vh); /* etwas kleiner */
   --half: calc(var(--cubeSize) / 2);
 
-  --gapScene: clamp(56px, 8vh, 110px);
-  --gapHeadline: 56px;
+  --gapScene: 72px;
+  --gapHeadline: 36px;
 
   --shadowW: calc(var(--cubeSize) * 0.82);
   --shadowH: calc(var(--cubeSize) * 0.14);
@@ -24,13 +24,12 @@
   --padBottom: max(18px, env(safe-area-inset-bottom));
   --padLeft: max(18px, env(safe-area-inset-left));
 
-  /* Button sizing (Desktop) */
-  --btnPadY: 22px;
-  --btnPadX: 70px;
-  --btnFont: 26px;
+  /* Button Desktop */
+  --btnPadY: 20px;
+  --btnPadX: 56px;
+  --btnFont: 22px;
 
-  /* Offsets */
-  --cubeOffsetDesktop: -5px; /* Desktop: Würfel 5px nach oben */
+  --cubeOffsetDesktop: -5px;
   --btnOffsetMobile: 0px;
 }
 
@@ -46,29 +45,28 @@
     --padBottom: calc(env(safe-area-inset-bottom) + 14px);
     --padLeft: max(14px, env(safe-area-inset-left));
 
-    /* Button sizing (Mobile) */
     --btnPadY: 16px;
     --btnPadX: 46px;
     --btnFont: 20px;
 
-    /* Mobile: Buttons 20px nach unten */
     --btnOffsetMobile: 20px;
   }
 }
 
-html, body { margin: 0; height: 100%; }
+html, body {
+  margin: 0;
+  height: 100%;
+}
 
 body{
   min-height: 100vh;
   min-height: 100svh;
-
   display: flex;
   justify-content: center;
-  align-items: center; /* Desktop */
+  align-items: center;
 
   background: url("boden.jpg") center / cover no-repeat;
   font-family: system-ui, sans-serif;
-
   padding: var(--padTop) var(--padSide) var(--padBottom) var(--padLeft);
 }
 
@@ -85,8 +83,11 @@ body{
 
 /* Headline */
 .headline{
-  width: var(--cubeSize);
+  width: calc(var(--cubeSize) * 0.9); /* Desktop kleiner */
   margin-bottom: var(--gapHeadline);
+}
+@media (max-width: 900px){
+  .headline{ width: var(--cubeSize); }
 }
 .headline img{
   width:100%;
@@ -114,9 +115,8 @@ body{
   background: radial-gradient(ellipse at center,
     rgba(0,0,0,0.45) 0%,
     rgba(0,0,0,0.25) 35%,
-    rgba(0,0,0,0.10) 55%,
-    rgba(0,0,0,0.00) 70%
-  );
+    rgba(0,0,0,0.1) 55%,
+    rgba(0,0,0,0) 70%);
   filter: blur(6px);
 }
 
@@ -132,19 +132,16 @@ body{
 /* Seiten */
 .face{
   position:absolute;
-  width: var(--cubeSize);
-  height: var(--cubeSize);
+  width:100%;
+  height:100%;
   background:#fff;
-  border-radius: 16px;
+  border-radius:16px;
   overflow:hidden;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
 }
 .face img{
   width:100%;
   height:100%;
   object-fit: cover;
-  user-select:none;
-  pointer-events:none;
 }
 
 /* 3D */
@@ -158,10 +155,14 @@ body{
 /* Buttons */
 .buttons{
   display:flex;
-  flex-direction: column;
-  align-items:center;
-  gap: 14px;
-  transform: translateY(var(--btnOffsetMobile)); /* Mobile-Offset für beide Buttons */
+  gap: 18px;
+  transform: translateY(var(--btnOffsetMobile));
+}
+@media (max-width: 900px){
+  .buttons{
+    flex-direction: column;
+    gap: 14px;
+  }
 }
 
 .btn{
@@ -169,177 +170,124 @@ body{
   font-size: var(--btnFont);
   font-weight: 800;
   letter-spacing: 0.12em;
-  border: none;
   border-radius: 999px;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: transform 120ms ease, opacity 120ms ease;
+  cursor:pointer;
+  border:none;
 }
-
-.btn:hover{ transform: scale(1.04); }
-.btn:disabled{ opacity:.6; cursor: default; transform:none; }
-
-.btn-black{
-  background:#000;
-  color:#fff;
-}
-
-.btn-white{
-  background:#fff;
-  color:#000;
-  border: 2px solid #000;
-}
+.btn-black{ background:#000; color:#fff; }
+.btn-white{ background:#fff; color:#000; border:2px solid #000; }
 
 /* Countdown */
 .countdown{
+  font-weight:700;
+  font-size:14px;
   margin-top: 6px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-size: 14px;
-  color: #000;
-  background: rgba(255,255,255,0.7);
-  padding: 6px 10px;
-  border-radius: 999px;
-  display: none;
+  display:none;
 }
 
-@media (max-width: 900px){
-  .countdown{ font-size: 13px; }
+/* 🔒 Landscape-Sperre (Mobile) */
+.orientation-lock{
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  z-index:9999;
+  font-size:18px;
+  padding:24px;
+}
+
+@media (max-width: 900px) and (orientation: landscape){
+  .orientation-lock{ display:flex; }
+  body{ overflow:hidden; }
 }
 </style>
 </head>
 
 <body>
-  <div class="scene">
-    <div class="headline">
-      <img src="headline.png" alt="Dance Cube">
-    </div>
 
-    <div class="stage">
-      <div class="shadow"></div>
+<div class="orientation-lock">
+  Bitte Hochformat verwenden 📱
+</div>
 
-      <div class="cube" id="cube">
-        <div class="face front"><img src="1.png" alt="1"></div>
-        <div class="face right"><img src="2.png" alt="2"></div>
-        <div class="face back"><img src="3.png" alt="3"></div>
-        <div class="face left"><img src="4.png" alt="4"></div>
-        <div class="face top"><img src="5.png" alt="5"></div>
-        <div class="face bottom"><img src="6.png" alt="6"></div>
-      </div>
-    </div>
+<div class="scene">
+  <div class="headline">
+    <img src="headline.png" alt="Dance Cube">
+  </div>
 
-    <div class="buttons">
-      <button id="rollBtn" class="btn btn-black" type="button">WÜRFELN</button>
-
-      <button id="partyBtn" class="btn btn-white" type="button">PARTY</button>
-      <div id="countdown" class="countdown"></div>
+  <div class="stage">
+    <div class="shadow"></div>
+    <div class="cube" id="cube">
+      <div class="face front"><img src="1.png"></div>
+      <div class="face right"><img src="2.png"></div>
+      <div class="face back"><img src="3.png"></div>
+      <div class="face left"><img src="4.png"></div>
+      <div class="face top"><img src="5.png"></div>
+      <div class="face bottom"><img src="6.png"></div>
     </div>
   </div>
+
+  <div class="buttons">
+    <button id="rollBtn" class="btn btn-black">WÜRFELN</button>
+    <button id="partyBtn" class="btn btn-white">PARTY</button>
+  </div>
+
+  <div id="countdown" class="countdown"></div>
+</div>
 
 <script>
 const cube = document.getElementById("cube");
 const rollBtn = document.getElementById("rollBtn");
 const partyBtn = document.getElementById("partyBtn");
-const countdownEl = document.getElementById("countdown");
+const countdown = document.getElementById("countdown");
 
 const rotations = {
-  1: [0, 0],
-  2: [0, -90],
-  3: [0, 180],
-  4: [0, 90],
-  5: [-90, 0],
-  6: [90, 0]
+  1:[0,0],2:[0,-90],3:[0,180],4:[0,90],5:[-90,0],6:[90,0]
 };
 
-let rolling = false;
+let party=false, timer=null, counter=null, sec=10;
 
-let partyActive = false;
-let partyInterval = null;
-let countdownInterval = null;
-let secondsLeft = 10;
-
-function setCountdownVisible(visible){
-  countdownEl.style.display = visible ? "inline-block" : "none";
+function roll(){
+  const n=Math.floor(Math.random()*6)+1;
+  const [x,y]=rotations[n];
+  cube.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`;
 }
 
-function updateCountdownText(){
-  countdownEl.textContent = `NÄCHSTER WURF IN ${secondsLeft}s`;
-}
+rollBtn.onclick=roll;
 
-function doRoll(){
-  const n = Math.floor(Math.random() * 6) + 1;
-  const [x, y] = rotations[n];
+partyBtn.onclick=()=>{
+  if(!party){
+    party=true;
+    partyBtn.textContent="PARTY STOPPEN";
+    rollBtn.disabled=true;
+    countdown.style.display="block";
+    roll();
+    sec=10;
+    countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
 
-  const spinX = x + 360 * (Math.floor(Math.random() * 3) + 2);
-  const spinY = y + 360 * (Math.floor(Math.random() * 3) + 2);
+    timer=setInterval(()=>{
+      roll();
+      sec=10;
+    },10000);
 
-  cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
-}
-
-function rollOnce(){
-  if (rolling || partyActive) return;
-  rolling = true;
-  rollBtn.disabled = true;
-
-  doRoll();
-
-  setTimeout(() => {
-    rolling = false;
-    rollBtn.disabled = false;
-  }, 2800);
-}
-
-function startParty(){
-  if (partyActive) return;
-  partyActive = true;
-
-  partyBtn.textContent = "PARTY STOPPEN";
-  rollBtn.disabled = true;
-
-  secondsLeft = 10;
-  setCountdownVisible(true);
-  updateCountdownText();
-
-  // sofort würfeln
-  doRoll();
-
-  // alle 10 Sekunden erneut würfeln
-  partyInterval = setInterval(() => {
-    doRoll();
-    secondsLeft = 10;
-    updateCountdownText();
-  }, 10000);
-
-  // Countdown jede Sekunde
-  countdownInterval = setInterval(() => {
-    secondsLeft = Math.max(0, secondsLeft - 1);
-    updateCountdownText();
-  }, 1000);
-}
-
-function stopParty(){
-  partyActive = false;
-
-  if (partyInterval) clearInterval(partyInterval);
-  if (countdownInterval) clearInterval(countdownInterval);
-  partyInterval = null;
-  countdownInterval = null;
-
-  partyBtn.textContent = "PARTY";
-  setCountdownVisible(false);
-
-  rollBtn.disabled = false;
-
-  // Ausgangsposition
-  cube.style.transform = "rotateX(0deg) rotateY(0deg)";
-}
-
-rollBtn.addEventListener("click", rollOnce);
-
-partyBtn.addEventListener("click", () => {
-  if (!partyActive) startParty();
-  else stopParty();
-});
+    counter=setInterval(()=>{
+      sec--;
+      countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
+    },1000);
+  } else {
+    party=false;
+    partyBtn.textContent="PARTY";
+    rollBtn.disabled=false;
+    clearInterval(timer);
+    clearInterval(counter);
+    countdown.style.display="none";
+    cube.style.transform="rotateX(0deg) rotateY(0deg)";
+  }
+};
 </script>
+
 </body>
 </html>
