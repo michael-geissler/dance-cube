@@ -15,7 +15,7 @@
   --gapHeadline: 36px;
   --gapButtons: 48px;
 
-  --headlineOffset: -10px;
+  --headlineOffset: -10px;     /* Desktop: 10px nach oben */
   --headlineScale: 0.9;
 
   --shadowW: calc(var(--cubeSize) * 0.82);
@@ -35,7 +35,7 @@
     --gapHeadline: 12px;
     --gapButtons: 22px;
 
-    --headlineOffset: -5px;
+    --headlineOffset: 5px;     /* Mobile: 10px weiter runter (war -5px) -> jetzt +5px */
     --headlineScale: 0.95;
 
     --btnPadY: 16px;
@@ -72,10 +72,9 @@ body{
   margin-bottom:var(--gapHeadline);
   transform: translateY(var(--headlineOffset));
 }
-
 .headline img{width:100%;display:block;}
 
-/* Headline Wackeln */
+/* Wackel-Animation (nur PARTY) */
 @keyframes wobble {
   0%{transform:translateY(var(--headlineOffset)) rotate(0deg)}
   25%{transform:translateY(calc(var(--headlineOffset)-2px)) rotate(-1deg)}
@@ -83,9 +82,7 @@ body{
   75%{transform:translateY(calc(var(--headlineOffset)-1px)) rotate(-1deg)}
   100%{transform:translateY(var(--headlineOffset)) rotate(0deg)}
 }
-.party-active .headline{
-  animation:wobble .6s infinite ease-in-out;
-}
+.party-active .headline{ animation:wobble .6s infinite ease-in-out; }
 
 /* ===== STAGE ===== */
 .stage{
@@ -149,40 +146,78 @@ body{
   .buttons{flex-direction:column;gap:14px;}
 }
 
+/* Einheitliche Buttongröße immer */
 .btn{
   padding:var(--btnPadY) var(--btnPadX);
   font-size:var(--btnFont);
   font-weight:800;
-  letter-spacing:.12em;
+  letter-spacing:.10em;
   border-radius:999px;
   border:none;
   cursor:pointer;
+  width: 100%;
+  max-width: 360px; /* sorgt dafür, dass beide gleich breit sind */
+}
+
+@media (min-width:901px){
+  .btn{
+    width: 320px;   /* Desktop: beide gleich breit nebeneinander */
+    max-width: none;
+  }
 }
 
 .btn-black{background:#000;color:#fff;}
 .btn-party{background:#f74931;color:#fff;}
 
-/* PARTY Pulsieren */
+/* PARTY Pulsieren (nur wenn aktiv) */
 @keyframes pulse {
   0%{transform:scale(1)}
-  50%{transform:scale(1.06)}
+  50%{transform:scale(1.04)}
   100%{transform:scale(1)}
 }
-.party-active .btn-party{
-  animation:pulse 1.1s infinite ease-in-out;
-}
+.party-active .btn-party{ animation:pulse 1.1s infinite ease-in-out; }
 
 /* Countdown */
 .countdown{
-  margin-top:8px;
-  font-weight:700;
+  margin-top:10px;
+  font-weight:800;
   font-size:14px;
+  color:#fff; /* weiß */
+  letter-spacing:.08em;
   display:none;
+  text-align:center;
+  text-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+
+/* ===== Mobile Querformat Hinweis ===== */
+.orientation-lock{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  z-index:9999;
+  font-size:18px;
+  padding:24px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+
+@media (max-width: 900px) and (orientation: landscape){
+  .orientation-lock{ display:flex; }
+  .scene{ display:none; }
 }
 </style>
 </head>
 
 <body>
+
+<div class="orientation-lock">
+  Bitte nur im <b>Hochformat</b> verwenden 📱
+</div>
 
 <div class="scene" id="scene">
   <div class="headline">
@@ -192,18 +227,18 @@ body{
   <div class="stage">
     <div class="shadow"></div>
     <div class="cube" id="cube">
-      <div class="face front"><img src="1.png"></div>
-      <div class="face right"><img src="2.png"></div>
-      <div class="face back"><img src="3.png"></div>
-      <div class="face left"><img src="4.png"></div>
-      <div class="face top"><img src="5.png"></div>
-      <div class="face bottom"><img src="6.png"></div>
+      <div class="face front"><img src="1.png" alt="1"></div>
+      <div class="face right"><img src="2.png" alt="2"></div>
+      <div class="face back"><img src="3.png" alt="3"></div>
+      <div class="face left"><img src="4.png" alt="4"></div>
+      <div class="face top"><img src="5.png" alt="5"></div>
+      <div class="face bottom"><img src="6.png" alt="6"></div>
     </div>
   </div>
 
   <div class="buttons">
-    <button id="rollBtn" class="btn btn-black">WÜRFELN</button>
-    <button id="partyBtn" class="btn btn-party">PARTY</button>
+    <button id="rollBtn" class="btn btn-black">SELBST WÜRFELN</button>
+    <button id="partyBtn" class="btn btn-party">PARTY STARTEN</button>
   </div>
 
   <div id="countdown" class="countdown"></div>
@@ -225,7 +260,10 @@ function roll(){
   cube.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`;
 }
 
-rollBtn.onclick=roll;
+rollBtn.onclick=()=>{
+  if(party) return;
+  roll();
+};
 
 partyBtn.onclick=()=>{
   if(!party){
@@ -233,21 +271,29 @@ partyBtn.onclick=()=>{
     scene.classList.add("party-active");
     partyBtn.textContent="PARTY STOPPEN";
     rollBtn.disabled=true;
-    countdown.style.display="block";
-    roll();
-    sec=10;
-    countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
 
-    timer=setInterval(()=>{roll();sec=10},10000);
-    counter=setInterval(()=>{sec--;countdown.textContent=`NÄCHSTER WURF IN ${sec}s`},1000);
-  }else{
+    countdown.style.display="block";
+    sec=10;
+    countdown.textContent=`NÄCHSTER MOVE IN ${sec}s`;
+    roll();
+
+    timer=setInterval(()=>{ roll(); sec=10; },10000);
+
+    counter=setInterval(()=>{
+      sec--;
+      countdown.textContent=`NÄCHSTER MOVE IN ${sec}s`;
+    },1000);
+
+  } else {
     party=false;
     scene.classList.remove("party-active");
-    partyBtn.textContent="PARTY";
+    partyBtn.textContent="PARTY STARTEN";
     rollBtn.disabled=false;
+
     clearInterval(timer);
     clearInterval(counter);
     countdown.style.display="none";
+
     cube.style.transform="rotateX(0deg) rotateY(0deg)";
   }
 };
