@@ -24,13 +24,13 @@
   --padBottom: max(18px, env(safe-area-inset-bottom));
   --padLeft: max(18px, env(safe-area-inset-left));
 
-  /* Button Desktop */
+  /* Button sizing (Desktop) */
   --btnPadY: 22px;
   --btnPadX: 70px;
   --btnFont: 26px;
 
   /* Offsets */
-  --cubeOffsetDesktop: -5px; /* 🔹 Desktop: Würfel 5px nach oben */
+  --cubeOffsetDesktop: -5px; /* Desktop: Würfel 5px nach oben */
   --btnOffsetMobile: 0px;
 }
 
@@ -38,22 +38,20 @@
 @media (max-width: 900px) {
   :root{
     --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
-
     --gapScene: 22px;
     --gapHeadline: 14px;
 
     --padTop: calc(env(safe-area-inset-top) + 34px);
-
-    /* Button kleiner */
-    --btnPadY: 16px;
-    --btnPadX: 46px;
-    --btnFont: 20px;
-
     --padSide: max(14px, env(safe-area-inset-right));
     --padBottom: calc(env(safe-area-inset-bottom) + 14px);
     --padLeft: max(14px, env(safe-area-inset-left));
 
-    /* 🔹 Mobile: Button 20px nach unten */
+    /* Button sizing (Mobile) */
+    --btnPadY: 16px;
+    --btnPadX: 46px;
+    --btnFont: 20px;
+
+    /* Mobile: Buttons 20px nach unten */
     --btnOffsetMobile: 20px;
   }
 }
@@ -74,7 +72,6 @@ body{
   padding: var(--padTop) var(--padSide) var(--padBottom) var(--padLeft);
 }
 
-/* Mobile: nicht zentrieren */
 @media (max-width: 900px){
   body{ align-items: flex-start; }
 }
@@ -103,8 +100,6 @@ body{
   width: var(--cubeSize);
   height: var(--cubeSize);
   perspective: calc(var(--cubeSize) * 2.2);
-
-  /* 🔹 Desktop: Würfel minimal nach oben */
   transform: translateY(var(--cubeOffsetDesktop));
 }
 
@@ -160,24 +155,57 @@ body{
 .top    { transform: rotateX(90deg) translateZ(var(--half)); }
 .bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
 
-/* Button */
-button{
+/* Buttons */
+.buttons{
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  gap: 14px;
+  transform: translateY(var(--btnOffsetMobile)); /* Mobile-Offset für beide Buttons */
+}
+
+.btn{
   padding: var(--btnPadY) var(--btnPadX);
   font-size: var(--btnFont);
   font-weight: 800;
   letter-spacing: 0.12em;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.btn:hover{ transform: scale(1.04); }
+.btn:disabled{ opacity:.6; cursor: default; transform:none; }
+
+.btn-black{
   background:#000;
   color:#fff;
-  border:none;
-  border-radius:999px;
-  cursor:pointer;
-  touch-action: manipulation;
-
-  /* 🔹 Mobile: Button nach unten */
-  transform: translateY(var(--btnOffsetMobile));
 }
-button:hover{ transform: translateY(var(--btnOffsetMobile)) scale(1.04); }
-button:disabled{ opacity:.6; cursor: default; transform: translateY(var(--btnOffsetMobile)); }
+
+.btn-white{
+  background:#fff;
+  color:#000;
+  border: 2px solid #000;
+}
+
+/* Countdown */
+.countdown{
+  margin-top: 6px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 14px;
+  color: #000;
+  background: rgba(255,255,255,0.7);
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: none;
+}
+
+@media (max-width: 900px){
+  .countdown{ font-size: 13px; }
+}
 </style>
 </head>
 
@@ -200,12 +228,19 @@ button:disabled{ opacity:.6; cursor: default; transform: translateY(var(--btnOff
       </div>
     </div>
 
-    <button id="rollBtn" type="button">WÜRFELN</button>
+    <div class="buttons">
+      <button id="rollBtn" class="btn btn-black" type="button">WÜRFELN</button>
+
+      <button id="partyBtn" class="btn btn-white" type="button">PARTY</button>
+      <div id="countdown" class="countdown"></div>
+    </div>
   </div>
 
 <script>
 const cube = document.getElementById("cube");
 const rollBtn = document.getElementById("rollBtn");
+const partyBtn = document.getElementById("partyBtn");
+const countdownEl = document.getElementById("countdown");
 
 const rotations = {
   1: [0, 0],
@@ -218,15 +253,35 @@ const rotations = {
 
 let rolling = false;
 
-function roll(){
-  if (rolling) return;
-  rolling = true;
-  rollBtn.disabled = true;
+let partyActive = false;
+let partyInterval = null;
+let countdownInterval = null;
+let secondsLeft = 10;
 
+function setCountdownVisible(visible){
+  countdownEl.style.display = visible ? "inline-block" : "none";
+}
+
+function updateCountdownText(){
+  countdownEl.textContent = `NÄCHSTER WURF IN ${secondsLeft}s`;
+}
+
+function doRoll(){
   const n = Math.floor(Math.random() * 6) + 1;
   const [x, y] = rotations[n];
 
-  cube.style.transform = `rotateX(${x + 720}deg) rotateY(${y + 720}deg)`;
+  const spinX = x + 360 * (Math.floor(Math.random() * 3) + 2);
+  const spinY = y + 360 * (Math.floor(Math.random() * 3) + 2);
+
+  cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
+}
+
+function rollOnce(){
+  if (rolling || partyActive) return;
+  rolling = true;
+  rollBtn.disabled = true;
+
+  doRoll();
 
   setTimeout(() => {
     rolling = false;
@@ -234,7 +289,57 @@ function roll(){
   }, 2800);
 }
 
-rollBtn.addEventListener("click", roll);
+function startParty(){
+  if (partyActive) return;
+  partyActive = true;
+
+  partyBtn.textContent = "PARTY STOPPEN";
+  rollBtn.disabled = true;
+
+  secondsLeft = 10;
+  setCountdownVisible(true);
+  updateCountdownText();
+
+  // sofort würfeln
+  doRoll();
+
+  // alle 10 Sekunden erneut würfeln
+  partyInterval = setInterval(() => {
+    doRoll();
+    secondsLeft = 10;
+    updateCountdownText();
+  }, 10000);
+
+  // Countdown jede Sekunde
+  countdownInterval = setInterval(() => {
+    secondsLeft = Math.max(0, secondsLeft - 1);
+    updateCountdownText();
+  }, 1000);
+}
+
+function stopParty(){
+  partyActive = false;
+
+  if (partyInterval) clearInterval(partyInterval);
+  if (countdownInterval) clearInterval(countdownInterval);
+  partyInterval = null;
+  countdownInterval = null;
+
+  partyBtn.textContent = "PARTY";
+  setCountdownVisible(false);
+
+  rollBtn.disabled = false;
+
+  // Ausgangsposition
+  cube.style.transform = "rotateX(0deg) rotateY(0deg)";
+}
+
+rollBtn.addEventListener("click", rollOnce);
+
+partyBtn.addEventListener("click", () => {
+  if (!partyActive) startParty();
+  else stopParty();
+});
 </script>
 </body>
 </html>
