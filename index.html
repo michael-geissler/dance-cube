@@ -7,110 +7,117 @@
 
 <style>
 :root{
-  --cubeSize: min(480px, 70vw, 55vh);
+  /* Desktop */
+  --cubeSize: min(480px, 70vw, 55vh); /* etwas kleiner */
   --half: calc(var(--cubeSize) / 2);
 
+  --gapScene: 72px;
+  --gapHeadline: 36px;
+
+  --shadowW: calc(var(--cubeSize) * 0.82);
+  --shadowH: calc(var(--cubeSize) * 0.14);
+  --shadowBottom: calc(var(--cubeSize) * -0.08);
+
+  /* Safe area */
   --padTop: max(18px, env(safe-area-inset-top));
   --padSide: max(18px, env(safe-area-inset-right));
   --padBottom: max(18px, env(safe-area-inset-bottom));
   --padLeft: max(18px, env(safe-area-inset-left));
 
+  /* Button Desktop */
   --btnPadY: 20px;
   --btnPadX: 56px;
   --btnFont: 22px;
 
   --cubeOffsetDesktop: -5px;
+  --btnOffsetMobile: 0px;
 }
 
 /* MOBILE */
-@media (max-width: 900px){
+@media (max-width: 900px) {
   :root{
     --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
+    --gapScene: 22px;
+    --gapHeadline: 14px;
+
+    --padTop: calc(env(safe-area-inset-top) + 34px);
+    --padSide: max(14px, env(safe-area-inset-right));
+    --padBottom: calc(env(safe-area-inset-bottom) + 14px);
+    --padLeft: max(14px, env(safe-area-inset-left));
+
     --btnPadY: 16px;
     --btnPadX: 46px;
     --btnFont: 20px;
+
+    --btnOffsetMobile: 20px;
   }
 }
 
-html,body{
-  margin:0;
-  height:100%;
+html, body {
+  margin: 0;
+  height: 100%;
 }
 
 body{
-  min-height:100svh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:url("boden.jpg") center/cover no-repeat;
-  font-family:system-ui,sans-serif;
-  padding:var(--padTop) var(--padSide) var(--padBottom) var(--padLeft);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: url("boden.jpg") center / cover no-repeat;
+  font-family: system-ui, sans-serif;
+  padding: var(--padTop) var(--padSide) var(--padBottom) var(--padLeft);
 }
 
-@media (max-width:900px){
-  body{align-items:flex-start;}
+@media (max-width: 900px){
+  body{ align-items: flex-start; }
 }
 
 .scene{
-  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:48px;
+  gap: var(--gapScene);
 }
 
-/* HEADLINE */
+/* Headline */
 .headline{
-  width: calc(var(--cubeSize) * 0.9);
+  width: calc(var(--cubeSize) * 0.9); /* Desktop kleiner */
+  margin-bottom: var(--gapHeadline);
 }
-@media (max-width:900px){
-  .headline{width:var(--cubeSize);}
+@media (max-width: 900px){
+  .headline{ width: var(--cubeSize); }
 }
-.headline img{width:100%;display:block;}
-
-/* 🎉 PARTY LIGHTS (HINTER DEM WÜRFEL) */
-.party-lights{
-  position:absolute;
-  inset:-20vh -20vw;
-  z-index:0;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .6s ease;
-  mix-blend-mode:screen;
-}
-
-.party-lights::before,
-.party-lights::after{
-  content:"";
-  position:absolute;
-  width:140%;
-  height:140%;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255,0,150,.35), transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(0,200,255,.35), transparent 45%),
-    radial-gradient(circle at 50% 70%, rgba(255,255,0,.25), transparent 50%);
-  animation: moveLights 12s linear infinite;
-}
-
-.party-lights::after{
-  animation-duration:18s;
-  animation-direction:reverse;
-  filter: blur(40px);
-}
-
-@keyframes moveLights{
-  0%{transform:translate(0,0) rotate(0deg);}
-  100%{transform:translate(-10%, -10%) rotate(360deg);}
+.headline img{
+  width:100%;
+  height:auto;
+  display:block;
 }
 
 /* Bühne */
 .stage{
-  position:relative;
-  width:var(--cubeSize);
-  height:var(--cubeSize);
-  perspective:calc(var(--cubeSize)*2);
-  transform:translateY(var(--cubeOffsetDesktop));
-  z-index:2;
+  position: relative;
+  width: var(--cubeSize);
+  height: var(--cubeSize);
+  perspective: calc(var(--cubeSize) * 2.2);
+  transform: translateY(var(--cubeOffsetDesktop));
+}
+
+/* Schatten */
+.shadow{
+  position:absolute;
+  bottom: var(--shadowBottom);
+  left:50%;
+  width: var(--shadowW);
+  height: var(--shadowH);
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0.25) 35%,
+    rgba(0,0,0,0.1) 55%,
+    rgba(0,0,0,0) 70%);
+  filter: blur(6px);
 }
 
 /* Würfel */
@@ -118,70 +125,101 @@ body{
   width:100%;
   height:100%;
   position:relative;
-  transform-style:preserve-3d;
-  transition:transform 2.8s cubic-bezier(.18,.9,.25,1);
+  transform-style: preserve-3d;
+  transition: transform 2.8s cubic-bezier(.18,.9,.25,1);
 }
 
 /* Seiten */
 .face{
   position:absolute;
-  inset:0;
+  width:100%;
+  height:100%;
   background:#fff;
   border-radius:16px;
   overflow:hidden;
 }
-.face img{width:100%;height:100%;object-fit:cover;}
+.face img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+}
 
-.front{transform:translateZ(var(--half));}
-.back{transform:rotateY(180deg) translateZ(var(--half));}
-.right{transform:rotateY(90deg) translateZ(var(--half));}
-.left{transform:rotateY(-90deg) translateZ(var(--half));}
-.top{transform:rotateX(90deg) translateZ(var(--half));}
-.bottom{transform:rotateX(-90deg) translateZ(var(--half));}
+/* 3D */
+.front  { transform: translateZ(var(--half)); }
+.back   { transform: rotateY(180deg) translateZ(var(--half)); }
+.right  { transform: rotateY(90deg) translateZ(var(--half)); }
+.left   { transform: rotateY(-90deg) translateZ(var(--half)); }
+.top    { transform: rotateX(90deg) translateZ(var(--half)); }
+.bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
 
 /* Buttons */
 .buttons{
   display:flex;
-  gap:18px;
-  z-index:3;
+  gap: 18px;
+  transform: translateY(var(--btnOffsetMobile));
 }
-@media (max-width:900px){
-  .buttons{flex-direction:column;}
+@media (max-width: 900px){
+  .buttons{
+    flex-direction: column;
+    gap: 14px;
+  }
 }
 
 .btn{
-  padding:var(--btnPadY) var(--btnPadX);
-  font-size:var(--btnFont);
-  font-weight:800;
-  letter-spacing:.12em;
-  border-radius:999px;
-  border:none;
+  padding: var(--btnPadY) var(--btnPadX);
+  font-size: var(--btnFont);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  border-radius: 999px;
   cursor:pointer;
+  border:none;
 }
-.btn-black{background:#000;color:#fff;}
-.btn-white{background:#fff;color:#000;border:2px solid #000;}
+.btn-black{ background:#000; color:#fff; }
+.btn-white{ background:#fff; color:#000; border:2px solid #000; }
 
+/* Countdown */
 .countdown{
-  margin-top:8px;
   font-weight:700;
+  font-size:14px;
+  margin-top: 6px;
   display:none;
-  z-index:3;
+}
+
+/* 🔒 Landscape-Sperre (Mobile) */
+.orientation-lock{
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  z-index:9999;
+  font-size:18px;
+  padding:24px;
+}
+
+@media (max-width: 900px) and (orientation: landscape){
+  .orientation-lock{ display:flex; }
+  body{ overflow:hidden; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="scene">
+<div class="orientation-lock">
+  Bitte Hochformat verwenden 📱
+</div>
 
+<div class="scene">
   <div class="headline">
     <img src="headline.png" alt="Dance Cube">
   </div>
 
-  <!-- PARTY LIGHTS -->
-  <div class="party-lights" id="partyLights"></div>
-
   <div class="stage">
+    <div class="shadow"></div>
     <div class="cube" id="cube">
       <div class="face front"><img src="1.png"></div>
       <div class="face right"><img src="2.png"></div>
@@ -205,13 +243,12 @@ const cube = document.getElementById("cube");
 const rollBtn = document.getElementById("rollBtn");
 const partyBtn = document.getElementById("partyBtn");
 const countdown = document.getElementById("countdown");
-const lights = document.getElementById("partyLights");
 
-const rotations={
+const rotations = {
   1:[0,0],2:[0,-90],3:[0,180],4:[0,90],5:[-90,0],6:[90,0]
 };
 
-let party=false,timer=null,counter=null,sec=10;
+let party=false, timer=null, counter=null, sec=10;
 
 function roll(){
   const n=Math.floor(Math.random()*6)+1;
@@ -226,13 +263,16 @@ partyBtn.onclick=()=>{
     party=true;
     partyBtn.textContent="PARTY STOPPEN";
     rollBtn.disabled=true;
-    lights.style.opacity="1";
-
     countdown.style.display="block";
-    sec=10;
     roll();
+    sec=10;
+    countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
 
-    timer=setInterval(()=>{roll();sec=10;},10000);
+    timer=setInterval(()=>{
+      roll();
+      sec=10;
+    },10000);
+
     counter=setInterval(()=>{
       sec--;
       countdown.textContent=`NÄCHSTER WURF IN ${sec}s`;
@@ -241,8 +281,6 @@ partyBtn.onclick=()=>{
     party=false;
     partyBtn.textContent="PARTY";
     rollBtn.disabled=false;
-    lights.style.opacity="0";
-
     clearInterval(timer);
     clearInterval(counter);
     countdown.style.display="none";
