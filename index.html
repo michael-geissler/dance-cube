@@ -11,22 +11,20 @@
   --cubeSize: min(520px, 82vw, 60vh);
   --half: calc(var(--cubeSize) / 2);
 
-  /* Abstände Desktop */
   --gapScene: clamp(56px, 8vh, 110px);
   --gapHeadline: 56px;
 
-  /* Schatten */
   --shadowW: calc(var(--cubeSize) * 0.82);
   --shadowH: calc(var(--cubeSize) * 0.14);
   --shadowBottom: calc(var(--cubeSize) * -0.08);
 }
 
-/* MOBILE: Würfel 1/3 kleiner + kompakter + weiter oben */
+/* MOBILE: Würfel kleiner */
 @media (max-width: 900px) {
   :root{
     --cubeSize: calc(min(520px, 82vw, 60vh) * 0.6666667);
-    --gapScene: clamp(18px, 3.2vh, 34px);
-    --gapHeadline: 18px;
+    --gapScene: 24px;
+    --gapHeadline: 12px;
   }
 }
 
@@ -39,23 +37,23 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center; /* Desktop bleibt zentriert */
+  align-items: center; /* Desktop */
 
-  /* Boden füllt Screen */
   background: url("boden.jpg") center / cover no-repeat;
-
   font-family: system-ui, sans-serif;
 
-  /* safe-area + Rand */
-  padding: max(18px, env(safe-area-inset-top))
-           max(18px, env(safe-area-inset-right))
-           max(18px, env(safe-area-inset-bottom))
-           max(18px, env(safe-area-inset-left));
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
-/* MOBILE: Szene nach oben statt vertikal zentriert */
+/* MOBILE: NICHT zentrieren */
 @media (max-width: 900px) {
-  body { align-items: flex-start; }
+  body {
+    align-items: flex-start;
+  }
 }
 
 .scene {
@@ -65,18 +63,19 @@ body {
   gap: var(--gapScene);
 }
 
-/* MOBILE: zusätzlich nach oben schieben */
-@media (max-width: 900px) {
-  .scene { margin-top: 24px; } /* fein justierbar */
-}
-
-/* HEADLINE: floating + parallax-ready */
+/* HEADLINE */
 .headline {
   width: var(--cubeSize);
   margin-bottom: var(--gapHeadline);
-  will-change: transform;
-  transition: transform 180ms ease;
 }
+
+/* 🔥 MOBILE: Headline aktiv nach oben ziehen */
+@media (max-width: 900px) {
+  .headline {
+    margin-top: -20px; /* ← DAS ist der entscheidende Fix */
+  }
+}
+
 .headline img {
   width: 100%;
   height: auto;
@@ -91,25 +90,21 @@ body {
   perspective: calc(var(--cubeSize) * 2.2);
 }
 
-/* Schatten: wird beim Würfeln animiert */
+/* Schatten */
 .shadow {
   position: absolute;
   bottom: var(--shadowBottom);
   left: 50%;
   width: var(--shadowW);
   height: var(--shadowH);
-  transform: translateX(-50%) scale(1);
+  transform: translateX(-50%);
   background: radial-gradient(ellipse at center,
     rgba(0,0,0,0.45) 0%,
     rgba(0,0,0,0.25) 35%,
-    rgba(0,0,0,0.10) 55%,
-    rgba(0,0,0,0.00) 70%
+    rgba(0,0,0,0.1) 55%,
+    rgba(0,0,0,0.0) 70%
   );
   filter: blur(6px);
-  will-change: transform, opacity, filter;
-  transition: transform 2.8s cubic-bezier(.18,.9,.25,1),
-              opacity 2.8s cubic-bezier(.18,.9,.25,1),
-              filter 2.8s cubic-bezier(.18,.9,.25,1);
 }
 
 /* Würfel */
@@ -119,7 +114,6 @@ body {
   position: relative;
   transform-style: preserve-3d;
   transition: transform 2.8s cubic-bezier(.18,.9,.25,1);
-  will-change: transform;
 }
 
 /* Seiten */
@@ -128,17 +122,14 @@ body {
   width: var(--cubeSize);
   height: var(--cubeSize);
   background: #fff;
-  border-radius: clamp(12px, 2.2vmin, 18px);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
 }
 
 .face img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  user-select: none;
-  pointer-events: none;
 }
 
 /* 3D-Positionen */
@@ -151,8 +142,8 @@ body {
 
 /* Button */
 button {
-  padding: clamp(16px, 3.2vmin, 28px) clamp(34px, 7vmin, 80px);
-  font-size: clamp(18px, 4.2vmin, 32px);
+  padding: 22px 70px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: 0.12em;
   background: #000;
@@ -160,53 +151,36 @@ button {
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  touch-action: manipulation;
-  transition: transform 120ms ease, opacity 120ms ease;
-}
-button:hover { transform: scale(1.04); }
-button:disabled { opacity: .6; cursor: default; transform: none; }
-
-/* Optional: sehr kleine Höhe -> noch kompakter */
-@media (max-height: 700px) and (max-width: 900px) {
-  :root{
-    --gapScene: 14px;
-    --gapHeadline: 12px;
-    --cubeSize: calc(min(520px, 84vw, 54vh) * 0.6666667);
-  }
-  .scene { margin-top: 16px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="scene" id="scene">
+<div class="scene">
 
-  <div class="headline" id="headline">
-    <img src="headline.png" alt="Headline">
+  <div class="headline">
+    <img src="headline.png" alt="Dance Cube">
   </div>
 
   <div class="stage">
-    <div class="shadow" id="shadow"></div>
+    <div class="shadow"></div>
 
     <div class="cube" id="cube">
-      <div class="face front"><img src="1.png" alt="1"></div>
-      <div class="face right"><img src="2.png" alt="2"></div>
-      <div class="face back"><img src="3.png" alt="3"></div>
-      <div class="face left"><img src="4.png" alt="4"></div>
-      <div class="face top"><img src="5.png" alt="5"></div>
-      <div class="face bottom"><img src="6.png" alt="6"></div>
+      <div class="face front"><img src="1.png"></div>
+      <div class="face right"><img src="2.png"></div>
+      <div class="face back"><img src="3.png"></div>
+      <div class="face left"><img src="4.png"></div>
+      <div class="face top"><img src="5.png"></div>
+      <div class="face bottom"><img src="6.png"></div>
     </div>
   </div>
 
-  <button id="rollBtn" type="button">WÜRFELN</button>
+  <button onclick="roll()">WÜRFELN</button>
 </div>
 
 <script>
 const cube = document.getElementById("cube");
-const shadow = document.getElementById("shadow");
-const headline = document.getElementById("headline");
-const rollBtn = document.getElementById("rollBtn");
 
 const rotations = {
   1: [0, 0],
@@ -217,78 +191,13 @@ const rotations = {
   6: [90, 0]
 };
 
-let rolling = false;
-
-/* Headline „floating“ + mini-parallax (Desktop: Maus, Mobile: DeviceOrientation) */
-(function headlineParallax(){
-  const max = 10; // px
-  let targetX = 0, targetY = 0;
-  let curX = 0, curY = 0;
-
-  function raf(){
-    curX += (targetX - curX) * 0.12;
-    curY += (targetY - curY) * 0.12;
-    headline.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-
-  window.addEventListener("mousemove", (e) => {
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
-    const dx = (e.clientX - cx) / cx;
-    const dy = (e.clientY - cy) / cy;
-    targetX = dx * max;
-    targetY = dy * max;
-  }, { passive: true });
-
-  window.addEventListener("deviceorientation", (e) => {
-    if (typeof e.gamma !== "number" || typeof e.beta !== "number") return;
-    const gx = Math.max(-30, Math.min(30, e.gamma)) / 30;
-    const gy = Math.max(-30, Math.min(30, e.beta)) / 30;
-    targetX = gx * max;
-    targetY = gy * max;
-  }, { passive: true });
-})();
-
-/* Würfeln: langsam + Schatten „pumpt“ */
 function roll() {
-  if (rolling) return;
-  rolling = true;
-  rollBtn.disabled = true;
-
   const n = Math.floor(Math.random() * 6) + 1;
   const [x, y] = rotations[n];
 
-  const spinX = x + 360 * (Math.floor(Math.random() * 3) + 2);
-  const spinY = y + 360 * (Math.floor(Math.random() * 3) + 2);
-
-  shadow.style.transform = `translateX(-50%) scale(0.82)`;
-  shadow.style.opacity = "0.7";
-  shadow.style.filter = "blur(10px)";
-
-  cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
-
-  setTimeout(() => {
-    shadow.style.transform = `translateX(-50%) scale(1)`;
-    shadow.style.opacity = "1";
-    shadow.style.filter = "blur(6px)";
-  }, 350);
-
-  setTimeout(() => {
-    rolling = false;
-    rollBtn.disabled = false;
-  }, 2850);
+  cube.style.transform =
+    `rotateX(${x + 720}deg) rotateY(${y + 720}deg)`;
 }
-
-rollBtn.addEventListener("click", roll);
-
-window.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    e.preventDefault();
-    roll();
-  }
-});
 </script>
 
 </body>
